@@ -37,6 +37,40 @@ cp SKILL.md ~/.hermes/skills/devops/cloudflare-quick-tunnel-demo/SKILL.md
 cloudflare-quick-tunnel-demo
 ```
 
+## 安装到 Claude Code
+
+Claude Code 可以使用这个 Skill，但不能直接“从 GitHub 自动调用”。需要把 `.claude/skills/cloudflare-quick-tunnel-demo.md` 放到项目或用户级 Claude skills 目录。
+
+### 方式 A：只给某个项目使用
+
+在你的项目根目录执行：
+
+```bash
+mkdir -p .claude/skills
+curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-quick-tunnel-skill/main/.claude/skills/cloudflare-quick-tunnel-demo.md \
+  -o .claude/skills/cloudflare-quick-tunnel-demo.md
+```
+
+然后在 Claude Code 里说：
+
+```text
+利用 cloudflare-quick-tunnel-demo 这个 skill，帮我把当前本地项目部署到公网给别人预览。
+```
+
+### 方式 B：全局使用
+
+```bash
+mkdir -p ~/.claude/skills
+curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-quick-tunnel-skill/main/.claude/skills/cloudflare-quick-tunnel-demo.md \
+  -o ~/.claude/skills/cloudflare-quick-tunnel-demo.md
+```
+
+以后任何项目里都可以对 Claude Code 说：
+
+```text
+帮我把这个本地项目用 Cloudflare Quick Tunnel 临时发布到公网。
+```
+
 ## 本地测试
 
 ```bash
