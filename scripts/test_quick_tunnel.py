@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""End-to-end test for the Cloudflare Quick Tunnel workflow.
+"""End-to-end test for the Cloudflare Tunnel skill quick mode.
 
 The test starts a temporary local HTTP site, exposes it with cloudflared
 Quick Tunnel, extracts the trycloudflare.com URL, then verifies that the
@@ -22,7 +22,7 @@ import time
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-EXPECTED = "Quick Tunnel Skill Test OK"
+EXPECTED = "Cloudflare Tunnel Skill Quick Mode Test OK"
 TIMEOUT_SECONDS = 120
 
 
@@ -60,7 +60,7 @@ def fetch(url: str, timeout: int = 15) -> str:
 
 def main() -> int:
     if not shutil.which("cloudflared"):
-        print("ERROR: cloudflared not found. Install it first: brew install cloudflared", file=sys.stderr)
+        print("ERROR: cloudflared not found. Install it first.", file=sys.stderr)
         return 1
 
     tmp = Path(tempfile.mkdtemp(prefix="quick-tunnel-skill-"))

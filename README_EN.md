@@ -1,93 +1,103 @@
-# Cloudflare Quick Tunnel Demo Skill
+# Cloudflare Tunnel Skill
 
-A beginner-friendly skill for turning a local web app/API/demo into a temporary public URL, so you can share it with friends, clients, teachers, or teammates without buying a server or configuring a domain.
+An agent workflow skill for exposing local HTTP/HTTPS services through Cloudflare Tunnel.
 
-## Use cases
+It supports two modes:
 
-- Share a local website with someone else
-- Make a localhost project publicly accessible for preview
-- Demonstrate Cloudflare Quick Tunnel in a video
-- Avoid server purchase, deployment, custom domain, or router port forwarding
+- **Quick Tunnel**: temporary `https://*.trycloudflare.com` preview URLs for demos and short-lived sharing.
+- **Named Tunnel**: fixed custom hostnames such as `app.example.com -> http://localhost:3000`.
 
-## One command
+## Use Cases
+
+- Share `localhost:3000` with someone else.
+- Create a temporary public URL for a local API.
+- Map a fixed domain to a local development service.
+- Provide webhook endpoints for GitHub, Slack, Stripe, n8n, and similar tools.
+- Let an agent check the local service, start a tunnel, extract the public URL, and verify it.
+
+## Avoid For
+
+- Sensitive admin panels without authentication.
+- Raw databases, Redis, Docker API, or private network services.
+- Public file hosting or large downloads.
+- Production services that cannot tolerate local machine sleep, process exits, or network loss.
+
+## Install
+
+Project-level Claude Code style install:
 
 ```bash
-cloudflared tunnel --no-autoupdate --protocol http2 --url http://localhost:3000
+mkdir -p .claude/skills
+curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-quick-tunnel-skill/main/.claude/skills/cloudflare-tunnel.md \
+  -o .claude/skills/cloudflare-tunnel.md
 ```
 
-More stable version:
+Full local skill install:
+
+```bash
+mkdir -p ~/.codex/skills/cloudflare-tunnel
+cp SKILL.md ~/.codex/skills/cloudflare-tunnel/SKILL.md
+cp -R references scripts ~/.codex/skills/cloudflare-tunnel/
+```
+
+## Quick Tunnel
+
+```bash
+python3 scripts/tunnel_helper.py quick --url http://localhost:3000
+```
+
+Status:
+
+```bash
+python3 scripts/tunnel_helper.py status
+```
+
+Stop:
+
+```bash
+python3 scripts/tunnel_helper.py stop
+```
+
+Manual fallback:
 
 ```bash
 printf '' > /tmp/cloudflared-empty.yml
 cloudflared --config /tmp/cloudflared-empty.yml tunnel --no-autoupdate --protocol http2 --url http://localhost:3000
 ```
 
-## Install for Hermes
+## Named Tunnel
 
-Clone this repository and copy `SKILL.md` into your Hermes skills directory:
+Prerequisites:
 
-```bash
-mkdir -p ~/.hermes/skills/devops/cloudflare-quick-tunnel-demo
-cp SKILL.md ~/.hermes/skills/devops/cloudflare-quick-tunnel-demo/SKILL.md
-```
+- `cloudflared` is installed.
+- You have a Cloudflare account.
+- The domain is managed by Cloudflare DNS.
 
-Then use the skill name in a new session:
-
-```text
-cloudflare-quick-tunnel-demo
-```
-
-## Install for Claude Code
-
-Claude Code can use this skill, but it will not automatically load it directly from GitHub. You need to place `.claude/skills/cloudflare-quick-tunnel-demo.md` in either a project-level or user-level Claude skills directory.
-
-### Option A: Project-level installation
-
-Run this in your project root:
+Flow:
 
 ```bash
-mkdir -p .claude/skills
-curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-quick-tunnel-skill/main/.claude/skills/cloudflare-quick-tunnel-demo.md \
-  -o .claude/skills/cloudflare-quick-tunnel-demo.md
+cloudflared tunnel login
+cloudflared tunnel create my-app
+cloudflared tunnel route dns my-app app.example.com
+python3 scripts/tunnel_helper.py named-config --name my-app --hostname app.example.com --url http://localhost:3000
+cloudflared tunnel --config .cloudflare-tunnel/my-app.yml run my-app
 ```
 
-Then tell Claude Code:
-
-```text
-Use the cloudflare-quick-tunnel-demo skill to expose the current local project to the public internet for preview.
-```
-
-### Option B: Global installation
+## Test
 
 ```bash
-mkdir -p ~/.claude/skills
-curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-quick-tunnel-skill/main/.claude/skills/cloudflare-quick-tunnel-demo.md \
-  -o ~/.claude/skills/cloudflare-quick-tunnel-demo.md
+python3 -m py_compile scripts/tunnel_helper.py scripts/test_quick_tunnel.py
+python3 scripts/tunnel_helper.py --help
 ```
 
-After that, in any project you can ask Claude Code:
-
-```text
-Expose this local project with Cloudflare Quick Tunnel and give me a temporary public URL.
-```
-
-## Local test
+End-to-end Quick Tunnel test:
 
 ```bash
 python3 scripts/test_quick_tunnel.py
 ```
 
-The test will:
+## Security
 
-1. Create a temporary local web page
-2. Start a local HTTP server
-3. Start Cloudflare Quick Tunnel
-4. Extract the `trycloudflare.com` public URL
-5. Verify the public URL with curl
-6. Clean up all processes automatically
+Cloudflare Tunnel exposes your local service to the public internet. Before sharing a URL, make sure it does not expose tokens, cookies, API keys, private data, internal systems, unauthenticated admin panels, or unsafe write APIs.
 
-## Notes
-
-Quick Tunnel URLs are temporary. If the terminal process stops, the computer sleeps, or the network disconnects, the public URL stops working.
-
-Do not use Quick Tunnel as a long-term production deployment, public file-sharing service, or large-download site. Use a named Cloudflare Tunnel for stable long-term services.
+Use application authentication or Cloudflare Access for sensitive services.
