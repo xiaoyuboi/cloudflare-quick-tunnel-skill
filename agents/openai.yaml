@@ -1,0 +1,5 @@
+interface:
+  display_name: "Cloudflare Tunnel"
+  short_description: "Expose localhost with Cloudflare Tunnel"
+  brand_color: "#F38020"
+  default_prompt: "Use $cloudflare-tunnel to expose my local app with either a temporary Quick Tunnel URL or a fixed custom-domain tunnel."
