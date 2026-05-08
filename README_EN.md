@@ -28,7 +28,7 @@ Project-level Claude Code style install:
 
 ```bash
 mkdir -p .claude/skills
-curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-quick-tunnel-skill/main/.claude/skills/cloudflare-tunnel.md \
+curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-tunnel-skill/main/.claude/skills/cloudflare-tunnel.md \
   -o .claude/skills/cloudflare-tunnel.md
 ```
 

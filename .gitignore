@@ -1,0 +1,3 @@
+.cloudflare-tunnel/
+__pycache__/
+*.py[cod]

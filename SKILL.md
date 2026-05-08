@@ -1,8 +1,6 @@
 ---
 name: cloudflare-tunnel
 description: Use when a user wants to expose a local HTTP/HTTPS service to the public internet with Cloudflare Tunnel. Supports temporary Quick Tunnel URLs for previews and named tunnels with fixed custom domains for stable public mapping.
-version: 2.0.0
-author: xiaoyuboi
 license: MIT
 metadata:
   tags: [cloudflare, tunnel, cloudflared, localhost, public-url, preview, custom-domain]
