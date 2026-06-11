@@ -21,6 +21,16 @@ Before running commands, identify:
 
 If the service is sensitive, pause and warn the user before exposing it. See `references/security.md`.
 
+## Paths and State
+
+All `scripts/...` and `references/...` paths in this document are relative to this skill's install directory, not the user's project. When the working directory is the user's project, call the helper with its full installed path, for example:
+
+```bash
+python3 ~/.claude/skills/cloudflare-tunnel/scripts/tunnel_helper.py quick --url http://localhost:3000
+```
+
+The helper writes runtime state to `.cloudflare-tunnel/` inside the current working directory, so run `status` and `stop` from the same directory where `quick` was started. If that directory is a git repository, make sure `.cloudflare-tunnel/` is in its `.gitignore` before committing.
+
 ## Mode Selection
 
 Use **quick mode** when:
@@ -64,6 +74,12 @@ python3 scripts/tunnel_helper.py quick --url http://localhost:<PORT>
 ```
 
 The helper starts `cloudflared` in the background, waits for a `trycloudflare.com` URL, writes state under `.cloudflare-tunnel/`, and prints JSON with the public URL.
+
+Helper behavior worth knowing:
+
+- If a quick tunnel for the **same** local URL is already running, it is reused (`"reused": true`). A running tunnel for a **different** local URL is stopped and replaced.
+- Transient `api.trycloudflare.com` failures are retried up to 3 times automatically.
+- `verify` falls back to DNS-over-HTTPS when the system resolver cannot resolve a fresh `trycloudflare.com` hostname (common behind fake-IP proxy DNS). DNS propagation can take one or two minutes; retry `verify` before treating the tunnel as broken.
 
 Manual fallback:
 

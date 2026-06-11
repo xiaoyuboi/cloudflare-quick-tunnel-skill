@@ -24,21 +24,23 @@ It supports two modes:
 
 ## Install
 
-Project-level Claude Code style install:
+> Claude Code only discovers skills laid out as `.claude/skills/<name>/SKILL.md` (a directory containing `SKILL.md`), and the helper script must be installed alongside it — always copy `SKILL.md` + `scripts/` + `references/` together.
+
+Claude Code global install (recommended, available in all projects):
 
 ```bash
-mkdir -p .claude/skills
-curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-tunnel-skill/main/.claude/skills/cloudflare-tunnel.md \
-  -o .claude/skills/cloudflare-tunnel.md
+git clone https://github.com/xiaoyuboi/cloudflare-tunnel-skill /tmp/cloudflare-tunnel-skill
+mkdir -p ~/.claude/skills/cloudflare-tunnel
+cp /tmp/cloudflare-tunnel-skill/SKILL.md ~/.claude/skills/cloudflare-tunnel/
+cp -R /tmp/cloudflare-tunnel-skill/scripts /tmp/cloudflare-tunnel-skill/references ~/.claude/skills/cloudflare-tunnel/
+rm -rf /tmp/cloudflare-tunnel-skill
 ```
 
-Full local skill install:
+Claude Code project-level install (current project only): same as above, but copy into `.claude/skills/cloudflare-tunnel/` inside the project.
 
-```bash
-mkdir -p ~/.codex/skills/cloudflare-tunnel
-cp SKILL.md ~/.codex/skills/cloudflare-tunnel/SKILL.md
-cp -R references scripts ~/.codex/skills/cloudflare-tunnel/
-```
+Codex install: same as above, but copy into `~/.codex/skills/cloudflare-tunnel/`.
+
+> Requirements: `cloudflared` (see `references/troubleshooting.md` for install commands) and Python 3. The helper script is fully tested on macOS / Linux; Windows support is best-effort (process management uses `tasklist`/`taskkill`) — prefer WSL or the manual fallback commands on Windows.
 
 ## Quick Tunnel
 

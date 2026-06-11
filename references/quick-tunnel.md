@@ -41,12 +41,18 @@ python3 scripts/tunnel_helper.py status
 python3 scripts/tunnel_helper.py stop
 ```
 
-The helper writes runtime files to `.cloudflare-tunnel/`:
+The helper writes runtime files to `.cloudflare-tunnel/` in the current working directory (run `status` and `stop` from the same directory):
 
 - `quick.pid`
 - `quick.log`
 - `quick-url.txt`
+- `quick-local-url.txt`
 - `cloudflared-empty.yml`
+
+Reuse and retry behavior:
+
+- Re-running `quick` with the same local URL reuses the running tunnel; a different local URL stops the old tunnel and starts a new one.
+- Transient `api.trycloudflare.com` failures are retried up to 3 times automatically.
 
 ## Manual Command
 
@@ -68,6 +74,14 @@ curl --noproxy '*' -sS -L --max-time 20 https://xxxx.trycloudflare.com
 ```
 
 The body should contain recognizable local app content. If the service returns JSON, verify a known endpoint such as `/health`.
+
+If curl fails with `Could not resolve host` (exit code 6), the system resolver cannot see the fresh subdomain yet — common behind fake-IP proxy DNS or right after tunnel creation. Retry with DNS-over-HTTPS:
+
+```bash
+curl --noproxy '*' --doh-url https://1.1.1.1/dns-query -sS -L --max-time 20 https://xxxx.trycloudflare.com
+```
+
+`python3 scripts/tunnel_helper.py verify --url ...` performs this fallback automatically. DNS propagation can take one or two minutes, so retry before treating the tunnel as broken.
 
 ## Notes
 

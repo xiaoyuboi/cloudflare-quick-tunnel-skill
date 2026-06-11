@@ -50,6 +50,17 @@ def fetch(url: str, timeout: int = 15) -> str:
             stderr=subprocess.PIPE,
             check=False,
         )
+        if result.returncode == 6:
+            # DNS resolution failed. Fake-IP proxy resolvers and slow trycloudflare
+            # propagation both break the system resolver, so retry via DNS-over-HTTPS.
+            result = subprocess.run(
+                ["curl", "--noproxy", "*", "--doh-url", "https://1.1.1.1/dns-query",
+                 "-sS", "-L", "--max-time", str(timeout), url],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
         if result.returncode == 0:
             return result.stdout
         raise RuntimeError(result.stderr.strip() or f"curl exited {result.returncode}")
@@ -144,8 +155,10 @@ def main() -> int:
 
         print(f"Public URL: {public_url}")
 
+        # DNS for a fresh trycloudflare subdomain can take a while to propagate,
+        # so keep retrying for a couple of minutes before declaring failure.
         last_error = None
-        for attempt in range(1, 11):
+        for attempt in range(1, 16):
             try:
                 body = fetch(public_url, timeout=20)
                 if EXPECTED in body:
@@ -154,7 +167,7 @@ def main() -> int:
                 last_error = "expected content not found"
             except Exception as exc:  # noqa: BLE001 - diagnostic script
                 last_error = repr(exc)
-            time.sleep(3)
+            time.sleep(5)
 
         print(f"ERROR: public URL verification failed: {last_error}", file=sys.stderr)
         return 1

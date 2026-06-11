@@ -26,31 +26,41 @@
 - 大文件下载站或公开网盘
 - 不愿意接受本地电脑断网/睡眠导致服务中断的生产服务
 
-## 安装到 Codex / Claude Code 风格 skill
+## 安装
 
-项目级安装：
+> Claude Code 只识别 `.claude/skills/<名字>/SKILL.md` 这种**目录结构**，并且 helper 脚本必须随 skill 一起安装，所以请完整复制 `SKILL.md` + `scripts/` + `references/` 三部分。
+
+Claude Code 全局安装（推荐，所有项目可用）：
 
 ```bash
-mkdir -p .claude/skills
-curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-tunnel-skill/main/.claude/skills/cloudflare-tunnel.md \
-  -o .claude/skills/cloudflare-tunnel.md
+git clone https://github.com/xiaoyuboi/cloudflare-tunnel-skill /tmp/cloudflare-tunnel-skill
+mkdir -p ~/.claude/skills/cloudflare-tunnel
+cp /tmp/cloudflare-tunnel-skill/SKILL.md ~/.claude/skills/cloudflare-tunnel/
+cp -R /tmp/cloudflare-tunnel-skill/scripts /tmp/cloudflare-tunnel-skill/references ~/.claude/skills/cloudflare-tunnel/
+rm -rf /tmp/cloudflare-tunnel-skill
 ```
 
-全局安装：
+Claude Code 项目级安装（仅当前项目可用）：
 
 ```bash
-mkdir -p ~/.claude/skills
-curl -L https://raw.githubusercontent.com/xiaoyuboi/cloudflare-tunnel-skill/main/.claude/skills/cloudflare-tunnel.md \
-  -o ~/.claude/skills/cloudflare-tunnel.md
+git clone https://github.com/xiaoyuboi/cloudflare-tunnel-skill /tmp/cloudflare-tunnel-skill
+mkdir -p .claude/skills/cloudflare-tunnel
+cp /tmp/cloudflare-tunnel-skill/SKILL.md .claude/skills/cloudflare-tunnel/
+cp -R /tmp/cloudflare-tunnel-skill/scripts /tmp/cloudflare-tunnel-skill/references .claude/skills/cloudflare-tunnel/
+rm -rf /tmp/cloudflare-tunnel-skill
 ```
 
-直接安装完整 skill：
+Codex 安装：
 
 ```bash
+git clone https://github.com/xiaoyuboi/cloudflare-tunnel-skill /tmp/cloudflare-tunnel-skill
 mkdir -p ~/.codex/skills/cloudflare-tunnel
-cp SKILL.md ~/.codex/skills/cloudflare-tunnel/SKILL.md
-cp -R references scripts ~/.codex/skills/cloudflare-tunnel/
+cp /tmp/cloudflare-tunnel-skill/SKILL.md ~/.codex/skills/cloudflare-tunnel/
+cp -R /tmp/cloudflare-tunnel-skill/scripts /tmp/cloudflare-tunnel-skill/references ~/.codex/skills/cloudflare-tunnel/
+rm -rf /tmp/cloudflare-tunnel-skill
 ```
+
+> 系统要求：需要预装 `cloudflared`（安装方法见 `references/troubleshooting.md`）和 Python 3。helper 脚本在 macOS / Linux 上经过完整测试；Windows 为尽力支持（进程管理走 `tasklist`/`taskkill`），建议 Windows 用户优先使用 WSL 或手动命令。
 
 ## Quick Tunnel 临时链接
 
