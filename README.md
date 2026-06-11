@@ -11,13 +11,6 @@
 - **Quick Tunnel**：临时 `https://*.trycloudflare.com` 预览链接，适合 demo、课堂、客户临时预览。
 - **Named Tunnel**：固定域名映射，例如 `app.example.com -> http://localhost:3000`，适合 webhook、长期预览、团队测试入口。
 
-> **EN**: An agent workflow skill that exposes local HTTP/HTTPS services to the public internet through Cloudflare Tunnel, in two modes:
->
-> - **Quick Tunnel**: temporary `https://*.trycloudflare.com` preview URLs for demos, classrooms, and short-lived client reviews.
-> - **Named Tunnel**: fixed custom hostnames such as `app.example.com -> http://localhost:3000` for webhooks, long-lived previews, and team testing entry points.
->
-> Full English docs: [README_EN.md](README_EN.md)
-
 ## 适合场景
 
 - 把 `localhost:3000` 临时发给别人看
